@@ -1,4 +1,4 @@
 set shell := ["zsh", "-cu"]
 
 run:
-  uv run main.py
+  uv run src/main.py
