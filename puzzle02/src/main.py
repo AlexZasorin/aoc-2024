@@ -1,33 +1,19 @@
-def is_safe(levels: list[int]) -> bool:
-    prev_level = None
-    increasing = None
-    for level in levels:
-        if prev_level is None:
-            prev_level = level
-        elif level < prev_level:
-            if increasing is None:
-                increasing = False
-            elif increasing is True:
-                return False
+def is_safe(levels: list[int], increasing: bool) -> bool:
+    prev_level = levels[0]
+    for i, level in enumerate(levels):
+        if i == 0:
+            continue
 
-            diff = abs(level - prev_level)
-            if diff < 1 or diff > 3:
-                return False
-
-            prev_level = level
-        elif level > prev_level:
-            if increasing is None:
-                increasing = True
-            elif increasing is False:
-                return False
-
-            diff = abs(level - prev_level)
-            if diff < 1 or diff > 3:
-                return False
-
-            prev_level = level
-        elif level == prev_level:
+        if (level < prev_level and increasing) or (
+            level > prev_level and not increasing
+        ):
             return False
+
+        diff = abs(level - prev_level)
+        if diff < 1 or diff > 3:
+            return False
+
+        prev_level = level
 
     return True
 
@@ -93,7 +79,7 @@ def part1(input: list[str]):
     safe = 0
     for line in input:
         levels: list[int] = list(map(lambda x: int(x), line.split(" ")))
-        if is_safe(levels):
+        if is_safe(levels, is_mostly_increasing(levels)):
             safe += 1
 
     return safe
