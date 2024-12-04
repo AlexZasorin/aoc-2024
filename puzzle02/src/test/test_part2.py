@@ -1,6 +1,6 @@
 import pytest
 
-from ..main import is_mostly_increasing, is_safe_recursive, is_safe_with_dampener
+from ..main import is_mostly_increasing, is_safe_recursive
 
 
 @pytest.mark.parametrize(
