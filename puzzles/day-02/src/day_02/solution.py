@@ -95,11 +95,3 @@ def part2(input: list[str]):
             safe += 1
 
     return safe
-
-
-if __name__ == "__main__":
-    with open("input.txt", "r") as file:
-        lines = file.readlines()
-
-    print(part1(lines))
-    print(part2(lines))

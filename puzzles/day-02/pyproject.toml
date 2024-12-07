@@ -1,10 +1,17 @@
 [project]
-name = "puzzle01"
+name = "day-02"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
-requires-python = ">=3.13"
 authors = [
     { name = "Alex Zasorin", email = "zasorin.alek@gmail.com" }
 ]
+requires-python = ">=3.13"
 dependencies = []
+
+[project.scripts]
+day-02 = "day_02:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
