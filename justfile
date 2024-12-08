@@ -6,7 +6,7 @@ setup day:
 
   print -P "%F{magenta}Setting up day-$day_str package...%f"
 
-  # uv init puzzles/day-$day_str
+  uv init puzzles/day-$day_str --package
 
   # Copy common code into __init__.py
 
