@@ -1,5 +1,5 @@
 [project]
-name = "aoc-2024"
+name = "day-14"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
@@ -7,14 +7,16 @@ authors = [
     { name = "Alex Zasorin", email = "zasorin.alek@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "aoc-2024",
+]
 
 [project.scripts]
-aoc-2024 = "aoc_2024:main"
+day-14 = "day_14:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.uv.workspace]
-members = ["puzzles/day-02", "puzzles/day-01", "puzzles/day-06", "puzzles/day-14"]
+[tool.uv.sources]
+aoc-2024 = { workspace = true }
