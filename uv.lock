@@ -29,6 +29,12 @@ source = { editable = "puzzles/day-02" }
 name = "day-06"
 version = "0.1.0"
 source = { editable = "puzzles/day-06" }
+dependencies = [
+    { name = "aoc-2024" },
+]
+
+[package.metadata]
+requires-dist = [{ name = "aoc-2024", editable = "." }]
 
 [[package]]
 name = "day-14"

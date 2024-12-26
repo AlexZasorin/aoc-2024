@@ -7,7 +7,9 @@ authors = [
     { name = "Alex Zasorin", email = "zasorin.alek@gmail.com" }
 ]
 requires-python = ">=3.13"
-dependencies = []
+dependencies = [
+    "aoc-2024",
+]
 
 [project.scripts]
 day-06 = "day_06:main"
@@ -15,3 +17,6 @@ day-06 = "day_06:main"
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.sources]
+aoc-2024 = { workspace = true }

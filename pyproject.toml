@@ -17,4 +17,4 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.uv.workspace]
-members = ["puzzles/day-02", "puzzles/day-01", "puzzles/day-06", "puzzles/day-14"]
+members = ["puzzles/day-02", "puzzles/day-01", "puzzles/day-06", "puzzles/day-14"] 
