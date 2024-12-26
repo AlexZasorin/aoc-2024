@@ -1,5 +1,6 @@
 from enum import Enum
-from typing import Final
+from time import perf_counter
+from typing import Callable, Final, ParamSpec, TypeVar
 
 from aoc_2024.vector import Vector
 
@@ -18,6 +19,39 @@ class Tile(Enum):
     GUARD_WEST = "<"
     OBSTACLE = "#"
     EMPTY = "."
+
+
+def format_time(seconds: float) -> tuple[float, str]:
+    if seconds < 1e-6:  # Less than 1 microsecond
+        return seconds * 1e9, "nanoseconds"
+    elif seconds < 1e-3:  # Less than 1 millisecond
+        return seconds * 1e6, "microseconds"
+    elif seconds < 1:  # Less than 1 second
+        return seconds * 1e3, "milliseconds"
+    elif seconds < 60:  # Less than 1 minute
+        return seconds, "seconds"
+    else:
+        return seconds / 60, "minutes"
+
+
+P = ParamSpec("P")
+R = TypeVar("R")
+
+
+def measure(func: Callable[P, R]) -> Callable[P, R]:
+    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
+        start = perf_counter()
+        result = func(*args, **kwargs)
+        end = perf_counter()
+
+        time_taken = end - start
+        value, unit = format_time(time_taken)
+        print(f"Output: {result}")
+        print(f"Calculated in {value:.2f} {unit}")
+
+        return result
+
+    return wrapper
 
 
 class Guard:
@@ -60,6 +94,9 @@ class Grid:
     def y(self):
         return len(self.board[0])
 
+    def place(self, pos: Vector, tile: Tile):
+        self.board[pos.x][pos.y] = tile.value
+
     def at(self, x: int, y: int) -> str:
         return self.board[x][y]
 
@@ -98,6 +135,7 @@ def turn_right(dir: Direction) -> Direction:
         return Direction.NORTH
 
 
+@measure
 def part1(board: list[list[str]]):
     grid = Grid(board)
     init_pos: Final[Vector] = find_guard(grid)
@@ -108,17 +146,58 @@ def part1(board: list[list[str]]):
         next_step = guard.next_step()
         if grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value:
             guard.turn_right()
-            guard.step()
 
-            if grid.in_bounds(guard.pos):
-                visited.add(guard.pos)
-        else:
-            guard.step()
-            if in_bounds(guard.pos, grid.x, grid.y):
-                visited.add(guard.pos)
+        guard.step()
+        if in_bounds(guard.pos, grid.x, grid.y):
+            visited.add(guard.pos)
 
     return len(visited)
 
 
-def part2(board: Grid):
-    pass
+def will_it_loop(grid: Grid, guard_pos: Vector, guard_dir: Direction) -> bool:
+    guard = Guard(guard_pos, guard_dir)
+    visited: set[tuple[Vector, Direction]] = set([(guard.pos, guard.dir)])
+    while grid.in_bounds(guard.pos):
+        next_step = guard.next_step()
+        while (
+            grid.in_bounds(next_step)
+            and grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value
+        ):
+            guard.turn_right()
+            next_step = guard.next_step()
+
+        guard.step()
+
+        # print(f"Guard: {guard.pos}, {guard.dir}")
+        if (guard.pos, guard.dir) in visited:
+            return True
+
+        if in_bounds(guard.pos, grid.x, grid.y):
+            visited.add((guard.pos, guard.dir))
+
+    return False
+
+
+@measure
+def part2(board: list[list[str]]):
+    grid = Grid(board)
+    init_pos: Final[Vector] = find_guard(grid)
+    guard = Guard(init_pos, Direction.NORTH)
+
+    placed: set[Vector] = set()
+    loops = 0
+    while grid.in_bounds(guard.pos):
+        next_step = guard.next_step()
+        while grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value:
+            guard.turn_right()
+            next_step = guard.next_step()
+
+        if next_step not in placed:
+            grid.place(next_step, Tile.OBSTACLE)
+            loops += 1 if will_it_loop(grid, guard.pos, guard.dir) else 0
+            grid.place(next_step, Tile.EMPTY)
+            placed.add(next_step)
+
+        guard.step()
+
+    return loops

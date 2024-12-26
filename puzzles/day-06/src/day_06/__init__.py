@@ -13,5 +13,5 @@ def main() -> None:
         for line in lines:
             board.append([*line])
 
-    print(part1(board))
-    print(part2(board))
+    _ = part1(board)
+    _ = part2(board)
