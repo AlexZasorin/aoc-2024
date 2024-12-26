@@ -46,7 +46,31 @@ class Guard:
         self.pos += self.dir.value
 
 
-Grid = list[list[str]]
+class Grid:
+    board: list[list[str]]
+
+    def __init__(self, board: list[list[str]]) -> None:
+        self.board = board
+
+    @property
+    def x(self):
+        return len(self.board)
+
+    @property
+    def y(self):
+        return len(self.board[0])
+
+    def at(self, x: int, y: int) -> str:
+        return self.board[x][y]
+
+    def in_bounds(self, pos: Vector):
+        return pos.x >= 0 and pos.x < self.x and pos.y >= 0 and pos.y < self.y
+
+    def __iter__(self):
+        return iter(self.board)
+
+    def __len__(self):
+        return len(self.board)
 
 
 def find_guard(board: Grid) -> Vector:
@@ -74,22 +98,23 @@ def turn_right(dir: Direction) -> Direction:
         return Direction.NORTH
 
 
-def part1(board: Grid):
-    init_pos: Final[Vector] = find_guard(board)
+def part1(board: list[list[str]]):
+    grid = Grid(board)
+    init_pos: Final[Vector] = find_guard(grid)
     guard = Guard(init_pos, Direction.NORTH)
 
     visited: set[Vector] = set([guard.pos])
-    while in_bounds(guard.pos, len(board), len(board[0])):
+    while grid.in_bounds(guard.pos):
         next_step = guard.next_step()
-        if board[next_step.x][next_step.y] == Tile.OBSTACLE.value:
+        if grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value:
             guard.turn_right()
             guard.step()
 
-            if in_bounds(guard.pos, len(board), len(board[0])):
+            if grid.in_bounds(guard.pos):
                 visited.add(guard.pos)
         else:
             guard.step()
-            if in_bounds(guard.pos, len(board), len(board[0])):
+            if in_bounds(guard.pos, grid.x, grid.y):
                 visited.add(guard.pos)
 
     return len(visited)
