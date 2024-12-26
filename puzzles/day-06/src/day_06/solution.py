@@ -75,11 +75,11 @@ def turn_right(dir: Direction) -> Direction:
 
 
 def part1(board: Grid):
-    guard_pos: Final[Vector] = find_guard(board)
-    guard = Guard(guard_pos, Direction.NORTH)
+    init_pos: Final[Vector] = find_guard(board)
+    guard = Guard(init_pos, Direction.NORTH)
 
     visited: set[Vector] = set([guard.pos])
-    while in_bounds(guard_pos, len(board), len(board[0])):
+    while in_bounds(guard.pos, len(board), len(board[0])):
         next_step = guard.next_step()
         if board[next_step.x][next_step.y] == Tile.OBSTACLE.value:
             guard.turn_right()
