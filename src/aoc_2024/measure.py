@@ -27,7 +27,6 @@ def measure(func: Callable[P, R]) -> Callable[P, R]:
 
         time_taken = end - start
         value, unit = format_time(time_taken)
-        print(f"Output: {result}")
         print(f"Calculated in {value:.2f} {unit}")
 
         return result
