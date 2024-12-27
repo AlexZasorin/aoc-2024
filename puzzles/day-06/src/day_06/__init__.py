@@ -13,5 +13,7 @@ def main() -> None:
         for line in lines:
             board.append([*line])
 
-    _ = part1(board)
-    _ = part2(board)
+    result = part1(board)
+    print(f"Output: {result}")
+    result2 = part2(board)
+    print(f"Output: {result2}")
