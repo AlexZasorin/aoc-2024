@@ -13,3 +13,8 @@ class Vector:
             return NotImplemented
 
         return Vector(self.x + other.x, self.y + other.y)
+
+    def __sub__(self, other: object) -> Vector:
+        if not isinstance(other, Vector):
+            return NotImplemented
+        return Vector(self.x - other.x, self.y - other.y)
