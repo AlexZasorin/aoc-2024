@@ -123,16 +123,15 @@ def part1(board: list[list[str]]):
 
 
 def will_it_loop(grid: Grid, guard_pos: Vector, guard_dir: Direction) -> bool:
-    guard = Guard(guard_pos, guard_dir)
-    visited: set[tuple[Vector, Direction]] = set([(guard.pos, guard.dir)])
-    while grid.in_bounds(guard.pos):
-        guard.step(grid)
+    slow_guard = Guard(guard_pos, guard_dir)
+    fast_guard = Guard(guard_pos, guard_dir)
+    while grid.in_bounds(slow_guard.pos) and grid.in_bounds(fast_guard.pos):
+        slow_guard.step(grid)
+        fast_guard.step(grid)
+        fast_guard.step(grid)
 
-        if (guard.pos, guard.dir) in visited:
+        if slow_guard.pos == fast_guard.pos and slow_guard.dir == fast_guard.dir:
             return True
-
-        if grid.in_bounds(guard.pos):
-            visited.add((guard.pos, guard.dir))
 
     return False
 
