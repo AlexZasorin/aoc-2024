@@ -1,7 +1,7 @@
 from enum import Enum
-from time import perf_counter
-from typing import Callable, Final, ParamSpec, TypeVar
+from typing import Final
 
+from aoc_2024.measure import measure
 from aoc_2024.vector import Vector
 
 
@@ -19,39 +19,6 @@ class Tile(Enum):
     GUARD_WEST = "<"
     OBSTACLE = "#"
     EMPTY = "."
-
-
-def format_time(seconds: float) -> tuple[float, str]:
-    if seconds < 1e-6:  # Less than 1 microsecond
-        return seconds * 1e9, "nanoseconds"
-    elif seconds < 1e-3:  # Less than 1 millisecond
-        return seconds * 1e6, "microseconds"
-    elif seconds < 1:  # Less than 1 second
-        return seconds * 1e3, "milliseconds"
-    elif seconds < 60:  # Less than 1 minute
-        return seconds, "seconds"
-    else:
-        return seconds / 60, "minutes"
-
-
-P = ParamSpec("P")
-R = TypeVar("R")
-
-
-def measure(func: Callable[P, R]) -> Callable[P, R]:
-    def wrapper(*args: P.args, **kwargs: P.kwargs) -> R:
-        start = perf_counter()
-        result = func(*args, **kwargs)
-        end = perf_counter()
-
-        time_taken = end - start
-        value, unit = format_time(time_taken)
-        print(f"Output: {result}")
-        print(f"Calculated in {value:.2f} {unit}")
-
-        return result
-
-    return wrapper
 
 
 class Guard:
@@ -120,21 +87,6 @@ def find_guard(board: Grid) -> Vector:
     return Vector(0, 0)
 
 
-def in_bounds(pos: Vector, x: int, y: int):
-    return pos.x >= 0 and pos.x < x and pos.y >= 0 and pos.y < y
-
-
-def turn_right(dir: Direction) -> Direction:
-    if dir == Direction.NORTH:
-        return Direction.EAST
-    elif dir == Direction.EAST:
-        return Direction.SOUTH
-    elif dir == Direction.SOUTH:
-        return Direction.WEST
-    else:
-        return Direction.NORTH
-
-
 @measure
 def part1(board: list[list[str]]):
     grid = Grid(board)
@@ -148,7 +100,7 @@ def part1(board: list[list[str]]):
             guard.turn_right()
 
         guard.step()
-        if in_bounds(guard.pos, grid.x, grid.y):
+        if grid.in_bounds(guard.pos):
             visited.add(guard.pos)
 
     return len(visited)
@@ -168,11 +120,10 @@ def will_it_loop(grid: Grid, guard_pos: Vector, guard_dir: Direction) -> bool:
 
         guard.step()
 
-        # print(f"Guard: {guard.pos}, {guard.dir}")
         if (guard.pos, guard.dir) in visited:
             return True
 
-        if in_bounds(guard.pos, grid.x, grid.y):
+        if grid.in_bounds(guard.pos):
             visited.add((guard.pos, guard.dir))
 
     return False
