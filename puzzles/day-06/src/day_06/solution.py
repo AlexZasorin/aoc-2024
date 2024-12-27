@@ -21,32 +21,6 @@ class Tile(Enum):
     EMPTY = "."
 
 
-class Guard:
-    pos: Vector
-    dir: Direction
-
-    def __init__(self, pos: Vector, dir: Direction) -> None:
-        self.pos = pos
-        self.dir = dir
-
-    def turn_right(self):
-        match self.dir:
-            case Direction.NORTH:
-                self.dir = Direction.EAST
-            case Direction.EAST:
-                self.dir = Direction.SOUTH
-            case Direction.SOUTH:
-                self.dir = Direction.WEST
-            case Direction.WEST:
-                self.dir = Direction.NORTH
-
-    def next_step(self):
-        return self.pos + self.dir.value
-
-    def step(self):
-        self.pos += self.dir.value
-
-
 class Grid:
     board: list[list[str]]
 
@@ -77,6 +51,48 @@ class Grid:
         return len(self.board)
 
 
+class Guard:
+    pos: Vector
+    dir: Direction
+
+    def __init__(self, pos: Vector, dir: Direction) -> None:
+        self.pos = pos
+        self.dir = dir
+
+    def turn_right(self):
+        match self.dir:
+            case Direction.NORTH:
+                self.dir = Direction.EAST
+            case Direction.EAST:
+                self.dir = Direction.SOUTH
+            case Direction.SOUTH:
+                self.dir = Direction.WEST
+            case Direction.WEST:
+                self.dir = Direction.NORTH
+
+    def next_step(self, grid: Grid) -> Vector:
+        next_step = self.pos + self.dir.value
+        while (
+            grid.in_bounds(next_step)
+            and grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value
+        ):
+            self.turn_right()
+            next_step = self.pos + self.dir.value
+
+        return next_step
+
+    def step(self, grid: Grid):
+        next_step = self.pos + self.dir.value
+        while (
+            grid.in_bounds(next_step)
+            and grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value
+        ):
+            self.turn_right()
+            next_step = self.pos + self.dir.value
+
+        self.pos = next_step
+
+
 def find_guard(board: Grid) -> Vector:
     for x, row in enumerate(board):
         for y, item in enumerate(row):
@@ -95,11 +111,11 @@ def part1(board: list[list[str]]):
 
     visited: set[Vector] = set([guard.pos])
     while grid.in_bounds(guard.pos):
-        next_step = guard.next_step()
+        next_step = guard.next_step(grid)
         if grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value:
             guard.turn_right()
 
-        guard.step()
+        guard.step(grid)
         if grid.in_bounds(guard.pos):
             visited.add(guard.pos)
 
@@ -110,15 +126,7 @@ def will_it_loop(grid: Grid, guard_pos: Vector, guard_dir: Direction) -> bool:
     guard = Guard(guard_pos, guard_dir)
     visited: set[tuple[Vector, Direction]] = set([(guard.pos, guard.dir)])
     while grid.in_bounds(guard.pos):
-        next_step = guard.next_step()
-        while (
-            grid.in_bounds(next_step)
-            and grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value
-        ):
-            guard.turn_right()
-            next_step = guard.next_step()
-
-        guard.step()
+        guard.step(grid)
 
         if (guard.pos, guard.dir) in visited:
             return True
@@ -138,10 +146,7 @@ def part2(board: list[list[str]]):
     placed: set[Vector] = set()
     loops = 0
     while grid.in_bounds(guard.pos):
-        next_step = guard.next_step()
-        while grid.at(next_step.x, next_step.y) == Tile.OBSTACLE.value:
-            guard.turn_right()
-            next_step = guard.next_step()
+        next_step = guard.next_step(grid)
 
         if next_step not in placed:
             grid.place(next_step, Tile.OBSTACLE)
@@ -149,6 +154,6 @@ def part2(board: list[list[str]]):
             grid.place(next_step, Tile.EMPTY)
             placed.add(next_step)
 
-        guard.step()
+        guard.step(grid)
 
     return loops
