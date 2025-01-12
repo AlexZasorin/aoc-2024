@@ -4,9 +4,14 @@ fetch-input day:
   #!/usr/bin/env zsh
   day_str=$(printf "%02d" {{day}})
 
-  print -P "%F{magenta}Geting day-$day_str inputs...%f"
+  print -P "%F{magenta}Getting day-$day_str inputs...%f"
   cookie=$(cat .session-cookie 2>/dev/null)
-  curl -s -H "Cookie: session=$cookie" https://adventofcode.com/2024/day/{{day}}/input > inputs/day-$day_str.txt
+  response=$(curl -s -H "Cookie: session=$cookie" https://adventofcode.com/2024/day/{{day}}/input)
+  if [[ $response == *"log in"* ]]; then
+      echo "Error: Authentication failed. Please check your session cookie."
+      exit 1
+  fi
+  echo "$response" > inputs/day-$day_str.txt
 
 setup day:
   #!/usr/bin/env zsh
