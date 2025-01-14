@@ -2,3 +2,4 @@ __pycache__/
 .session-cookie
 .envrc
 inputs/
+puzzles/day-06/src/day_06/images/
