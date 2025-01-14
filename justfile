@@ -6,6 +6,7 @@ fetch-input day:
 
   print -P "%F{magenta}Getting day-$day_str inputs...%f"
   cookie=$(cat .session-cookie 2>/dev/null)
+  mkdir -p inputs
   response=$(curl -s -H "Cookie: session=$cookie" https://adventofcode.com/2024/day/{{day}}/input)
   if [[ $response == *"log in"* ]]; then
       echo "Error: Authentication failed. Please check your session cookie."
