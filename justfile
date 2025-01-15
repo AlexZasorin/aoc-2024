@@ -30,3 +30,9 @@ setup day:
 
   # Get day examples for part1 and part2
 
+run day:
+  #!/usr/bin/env zsh
+  day_str=$(printf "%02d" {{day}})
+
+  uv run --package day-$day_str day-$day_str
+
