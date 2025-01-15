@@ -9,12 +9,3 @@ def main() -> None:
 
     with open(f"inputs/{day_str}.txt", "r") as file:
         lines = file.readlines()
-
-    board: list[list[str]] = []
-    for line in lines:
-        board.append([*line])
-
-    result = part1(board)
-    print(f"Output: {result}")
-    result2 = part2(board)
-    print(f"Output: {result2}")

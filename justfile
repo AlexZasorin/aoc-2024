@@ -24,6 +24,8 @@ setup day:
 
   # Copy common code into __init__.py
 
+  cp ./src/aoc_2024/default_init.py.tmpl ./puzzles/day-$day_str/src/day_$day_str/__init__.py
+
   # Create a solution.py with an empty part1 and part2 function
 
   just fetch-input day={{day}}
